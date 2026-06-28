@@ -38,21 +38,7 @@ Bu çalışmada veri sızıntısını önlemek amacıyla tüm ön işleme ve öz
 
 Model seçimi ve hiperparametre optimizasyonu için StratifiedGroupKFold yapısı kullanılmıştır. Böylece sınıf dağılımı korunurken aynı hastaya ait örneklerin farklı foldlara düşmesi engellenmiştir. Optuna TPE sampler ile her model için 50 trial gerçekleştirilmiş ve amaç fonksiyonu Macro-F1 olarak belirlenmiştir. 
 
-Kod açıklamaları ve ilgili dosyalar:
-
-- `load_dataset`: Normal ve papilödem CSV dosyalarını okur, sınıf etiketlerini oluşturur ve iki veri setini birleştirir.
-- `make_patient_level_splits`: Aynı hastaya ait örneklerin farklı alt kümelere düşmemesi için hasta seviyesinde train, validation ve test ayrımı yapar.
-- `make_preprocessor`: Median imputation, low-variance filtering, Pearson korelasyon eleme ve RobustScaler adımlarını tek bir ön işleme pipeline'ı içinde uygular.
-- `MRMRSelector`: Mutual information ve Pearson korelasyon temelli MRMR özellik seçimi yaparak en bilgilendirici radyomik özellikleri seçer.
-- `build_pipeline_from_params`: Ön işleme, MRMR özellik seçimi ve makine öğrenmesi modelini tek bir sklearn pipeline yapısında birleştirir.
-- `optimize_model`: Optuna TPE sampler ile hiperparametre optimizasyonu yapar ve amaç fonksiyonu olarak Macro-F1 skorunu kullanır.
-- `fit_prefit_calibrator`: Validation seti üzerinde sigmoid calibration uygulayarak model olasılık tahminlerini kalibre eder.
-- `FittedSoftVotingEnsemble`: RF, ET ve GB modellerinin olasılık çıktılarını ortalayarak soft voting ensemble modeli oluşturur.
-- `FittedWeightedSoftVotingEnsemble`: Bonus çalışma kapsamında ensemble üyelerine optimize edilmiş ağırlıklar vererek weighted ensemble modeli oluşturur.
-- `metrics_from_proba`: Accuracy, precision, recall, F1, Macro-F1, ROC-AUC, PR-AUC, balanced accuracy ve Brier Score metriklerini hesaplar.
-- `run_statistical_tests`: Friedman testi, Wilcoxon signed-rank testi ve Bonferroni düzeltmesi ile modelleri istatistiksel olarak karşılaştırır.
-- `run_shap_analysis` ve `run_lime_analysis`: Bonus açıklanabilirlik analizleri ile model kararlarının hangi özelliklerden etkilendiğini gösterir.
-- `scripts/build_academic_report_pdf.py`: Oluşturulan tablo ve grafik çıktılarını kullanarak final akademik PDF raporunu üretir.
+Kod parçaları ve açıklamaları aşağıdaki tabloda verilmiştir. Bu bölümde Command+F ile aranabilecek ilgili fonksiyon adları, kısa kod parçaları ve her kodun projedeki görevi birlikte sunulmuştur.
 
 ## 4. Modelleme
 

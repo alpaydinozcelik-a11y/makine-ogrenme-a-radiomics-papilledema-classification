@@ -115,6 +115,78 @@ FIGURE_COMMENTS = {
     ),
 }
 
+CODE_EXAMPLES = [
+    (
+        "load_dataset(raw_dir)\n"
+        "normal_raw = pd.read_csv(normal_path)\n"
+        "pap_raw = pd.read_csv(pap_path)\n"
+        "data = pd.concat([normal, pap], ignore_index=True)",
+        "Normal ve papilodem CSV dosyalarini okur, Target = 0/1 sinif etiketlerini ekler ve iki veri setini tek tabloda birlestirir.",
+    ),
+    (
+        "make_patient_level_splits(data)\n"
+        "outer = StratifiedGroupKFold(...)\n"
+        "train_val_idx, test_idx = next(outer.split(data, y, groups))",
+        "Ayni hastaya ait orneklerin farkli train, validation veya test alt kumelerine dusmesini engellemek icin hasta seviyesinde veri bolme yapar.",
+    ),
+    (
+        "make_preprocessor(correlation_threshold)\n"
+        "(\"imputer\", SimpleImputer(strategy=\"median\"))\n"
+        "(\"variance\", VarianceThreshold(threshold=0.0))\n"
+        "(\"correlation\", CorrelationFilter(threshold=correlation_threshold))\n"
+        "(\"scaler\", RobustScaler())",
+        "Eksik degerleri median ile doldurur, dusuk varyansli ve yuksek korelasyonlu ozellikleri eler, ardindan RobustScaler ile olcekleme yapar.",
+    ),
+    (
+        "MRMRSelector.fit(X, y)\n"
+        "relevance = mutual_info_classif(X, y, ...)\n"
+        "score = float(relevance[idx]) - redundancy",
+        "Mutual information ile sinifla iliskili ozellikleri bulur, Pearson korelasyonuna dayali redundancy cezasiyla tekrar eden ozellikleri azaltir.",
+    ),
+    (
+        "make_model_pipeline(...)\n"
+        "return Pipeline([\n"
+        "    (\"preprocess\", make_preprocessor(...)),\n"
+        "    (\"mrmr\", MRMRSelector(...)),\n"
+        "    (\"model\", estimator),\n"
+        "])",
+        "On isleme, MRMR ozellik secimi ve modeli tek sklearn pipeline icinde birlestirir; boylece veri sizintisi riski azaltilir.",
+    ),
+    (
+        "optimize_model(...)\n"
+        "sampler = optuna.samplers.TPESampler(seed=seed)\n"
+        "study.optimize(objective, n_trials=trials)",
+        "Optuna TPE sampler ile hiperparametre optimizasyonu yapar. Objective fonksiyonunda StratifiedGroupKFold ve Macro-F1 kullanilir.",
+    ),
+    (
+        "fit_prefit_calibrator(base_pipe, X_val, y_val)\n"
+        "CalibratedClassifierCV(..., method=\"sigmoid\", cv=\"prefit\")\n"
+        "calibrator.fit(X_val, y_val)",
+        "Egitilmis modeli validation seti uzerinde sigmoid calibration ile kalibre eder ve olasilik tahminlerinin guvenilirligini artirmayi hedefler.",
+    ),
+    (
+        "FittedSoftVotingEnsemble(ensemble_inputs)\n"
+        "ensemble_inputs = {RF, ET, GB}\n"
+        "proba = average(member.predict_proba(X))",
+        "RF, ET ve GB modellerinin olasilik ciktilarini ortalayarak soft voting ensemble modeli olusturur.",
+    ),
+    (
+        "metrics_from_proba(...)\n"
+        "accuracy_score(y, pred)\n"
+        "f1_score(y, pred, average=\"macro\")\n"
+        "roc_auc_score(y, proba)\n"
+        "average_precision_score(y, proba)",
+        "Accuracy, precision, recall, F1, Macro-F1, ROC-AUC, PR-AUC, balanced accuracy ve Brier Score metriklerini hesaplar.",
+    ),
+    (
+        "run_statistical_tests(cv_scores, output_path)\n"
+        "friedmanchisquare(...)\n"
+        "wilcoxon(...)\n"
+        "p_value_bonferroni = min(1.0, p_value * correction)",
+        "Model performanslarini Friedman testi, Wilcoxon signed-rank testi ve Bonferroni duzeltmesi ile istatistiksel olarak karsilastirir.",
+    ),
+]
+
 SKIP_LINES = {
     "Bu bolume `outputs/tables/model_performance_test.csv` tablosundaki sonuclari ekle.",
     "Bu bolume outputs/tables/model_performance_test.csv tablosundaki sonuclari ekle.",
@@ -235,6 +307,28 @@ def build_styles():
             textColor=colors.HexColor("#333333"),
         )
     )
+    styles.add(
+        ParagraphStyle(
+            name="CodeCell",
+            parent=styles["BodyText"],
+            fontName="Courier",
+            fontSize=6.8,
+            leading=8.1,
+            alignment=TA_LEFT,
+            spaceAfter=0,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="SmallTableText",
+            parent=styles["BodyText"],
+            fontName=base_font,
+            fontSize=8.2,
+            leading=10,
+            alignment=TA_LEFT,
+            spaceAfter=0,
+        )
+    )
     return styles
 
 
@@ -287,6 +381,11 @@ def paragraph(text: str, styles, style_name: str = "ReportBody") -> Paragraph:
     return Paragraph(html.escape(text), styles[style_name])
 
 
+def code_paragraph(text: str, styles) -> Paragraph:
+    escaped = html.escape(text).replace("\n", "<br/>")
+    return Paragraph(escaped, styles["CodeCell"])
+
+
 def add_lines(story: list, lines: list[str], styles) -> None:
     bullet_buffer: list[str] = []
 
@@ -314,6 +413,37 @@ def add_lines(story: list, lines: list[str], styles) -> None:
             story.append(paragraph(line, styles, "ReportBody"))
 
     flush_bullets()
+
+
+def add_code_examples(story: list, styles) -> None:
+    story.append(Spacer(1, 4))
+    story.append(paragraph("Tablo 1. Kod parcalari ve aciklamalari", styles, "Caption"))
+    data = [
+        [
+            Paragraph("Ilgili kod parcasi", styles["SmallTableText"]),
+            Paragraph("Bu kod ne ise yariyor?", styles["SmallTableText"]),
+        ]
+    ]
+    for code, explanation in CODE_EXAMPLES:
+        data.append([code_paragraph(code, styles), Paragraph(html.escape(explanation), styles["SmallTableText"])])
+
+    table = Table(data, colWidths=[7.6 * cm, 8.1 * cm], repeatRows=1)
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E8EEF5")),
+                ("FONTNAME", (0, 0), (-1, 0), "ReportFont-Bold" if "ReportFont-Bold" in pdfmetrics.getRegisteredFontNames() else "Helvetica-Bold"),
+                ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#B8B8B8")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                ("TOPPADDING", (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]
+        )
+    )
+    story.append(table)
+    story.append(Spacer(1, 10))
 
 
 def looks_like_plain_table_line(line: str) -> bool:
@@ -369,7 +499,7 @@ def add_result_tables(story: list, styles) -> None:
     if performance.exists():
         df = pd.read_csv(performance)
         story.append(Spacer(1, 6))
-        story.append(paragraph("Tablo 1. Final test seti model performanslari", styles, "Caption"))
+        story.append(paragraph("Tablo 2. Final test seti model performanslari", styles, "Caption"))
         story.append(
             dataframe_table(
                 df,
@@ -384,7 +514,7 @@ def add_feature_table(story: list, styles) -> None:
     if features.exists():
         df = pd.read_csv(features)
         story.append(Spacer(1, 6))
-        story.append(paragraph("Tablo 2. En onemli 10 radyomik ozellik", styles, "Caption"))
+        story.append(paragraph("Tablo 3. En onemli 10 radyomik ozellik", styles, "Caption"))
         story.append(dataframe_table(df, columns=["feature", "importance"], max_rows=10))
         story.append(Spacer(1, 10))
 
@@ -394,7 +524,7 @@ def add_statistics_table(story: list, styles) -> None:
     if stats.exists():
         df = pd.read_csv(stats)
         story.append(Spacer(1, 6))
-        story.append(paragraph("Tablo 3. Istatistiksel test sonuclari", styles, "Caption"))
+        story.append(paragraph("Tablo 4. Istatistiksel test sonuclari", styles, "Caption"))
         story.append(dataframe_table(df))
         story.append(Spacer(1, 10))
 
@@ -403,43 +533,43 @@ def add_bonus_tables(story: list, styles) -> None:
     bonus_tables = [
         (
             "deep_learning_mlp_results.csv",
-            "Tablo 4. Deep learning MLP model sonucu",
+            "Tablo 5. Deep learning MLP model sonucu",
             ["model", "accuracy", "macro_f1", "roc_auc", "pr_auc", "brier_score"],
             None,
         ),
         (
             "shap_summary.csv",
-            "Tablo 5. SHAP analizinde en etkili ozellikler",
+            "Tablo 6. SHAP analizinde en etkili ozellikler",
             ["feature", "mean_abs_shap"],
             10,
         ),
         (
             "lime_explanation.csv",
-            "Tablo 6. LIME lokal aciklama agirliklari",
+            "Tablo 7. LIME lokal aciklama agirliklari",
             ["model", "test_index", "feature_rule", "lime_weight"],
             10,
         ),
         (
             "nested_cv_results.csv",
-            "Tablo 7. Nested cross-validation dis fold sonuclari",
+            "Tablo 8. Nested cross-validation dis fold sonuclari",
             ["fold", "selected_model", "inner_best_macro_f1", "outer_macro_f1", "outer_roc_auc", "outer_pr_auc"],
             None,
         ),
         (
             "feature_stability.csv",
-            "Tablo 8. Feature stability analizinde en stabil ozellikler",
+            "Tablo 9. Feature stability analizinde en stabil ozellikler",
             ["feature", "selection_count", "n_folds", "stability_percent"],
             10,
         ),
         (
             "ensemble_optimization.csv",
-            "Tablo 9. Ensemble agirlik optimizasyonu",
+            "Tablo 10. Ensemble agirlik optimizasyonu",
             ["rf_weight", "et_weight", "gb_weight", "validation_macro_f1", "test_macro_f1", "test_roc_auc", "test_pr_auc"],
             None,
         ),
         (
             "threshold_optimization.csv",
-            "Tablo 10. Threshold optimization sonuclari",
+            "Tablo 11. Threshold optimization sonuclari",
             ["model", "best_threshold", "validation_macro_f1", "test_macro_f1", "test_recall", "test_precision"],
             10,
         ),
@@ -520,6 +650,9 @@ def build_pdf() -> Path:
         if section_title.startswith("6."):
             add_lines(story, lines, styles)
             add_result_tables(story, styles)
+        elif section_title.startswith("3."):
+            add_lines(story, lines, styles)
+            add_code_examples(story, styles)
         elif section_title.startswith("7."):
             add_figures(story, styles)
         elif section_title.startswith("8."):
