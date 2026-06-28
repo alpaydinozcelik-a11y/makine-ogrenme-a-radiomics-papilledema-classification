@@ -50,6 +50,71 @@ BONUS_FIGURES = [
     ("threshold_optimization.png", "Sekil 12. Threshold optimization sonuclari"),
 ]
 
+FIGURE_COMMENTS = {
+    "roc_curve.png": (
+        "Yorum: ROC egrisi modellerin normal ve papilodem siniflarini genel olarak ayirma gucunu "
+        "gostermektedir. Yuksek ROC-AUC degerleri, modellerin siniflari olasilik skorlarina gore "
+        "basarili sekilde siralayabildigini desteklemektedir."
+    ),
+    "precision_recall_curve.png": (
+        "Yorum: Precision-Recall egrisi, papilodem sinifinin normal sinifa gore daha az ornek "
+        "icermesi nedeniyle ozellikle onemlidir. Yuksek PR-AUC degerleri, pozitif sinifin "
+        "yakalanmasinda modellerin guclu performans gosterdigini ortaya koymaktadir."
+    ),
+    "confusion_matrix.png": (
+        "Yorum: Confusion matrix, dogru ve hatali siniflandirmalarin sinif bazinda dagilimini "
+        "gostermektedir. Diyagonal hucrelerdeki yogunluk modelin genel dogrulugunu, diyagonal "
+        "disindaki hucreler ise yanlis siniflandirilan ornekleri temsil etmektedir."
+    ),
+    "feature_importance.png": (
+        "Yorum: Feature importance grafigi, model kararlarinda en etkili radyomik ozellikleri "
+        "siralamaktadir. Feature_0005 ozelliginin belirgin katkisi, sinif ayriminda bu ozelligin "
+        "onemli bir ayirt edici bilgi tasidigini gostermektedir."
+    ),
+    "calibration_curve.png": (
+        "Yorum: Calibration curve, model olasilik tahminlerinin gercek pozitiflik oranlariyla "
+        "ne kadar uyumlu oldugunu degerlendirmektedir. Egrilerin ideal dogruya yakin seyretmesi "
+        "ve dusuk Brier Score degerleri, kalibrasyon sonrasi olasilik tahminlerinin makul "
+        "duzeyde guvenilir oldugunu gostermektedir."
+    ),
+    "model_comparison.png": (
+        "Yorum: Model karsilastirma grafigi, farkli algoritmalarin test setindeki performansini "
+        "bir arada sunmaktadir. Genel siniflandirma basarisi acisindan KNN modeli one cikarken, "
+        "RF ve ensemble modelleri olasilik bazli ayirt edicilik metriklerinde guclu sonuclar vermistir."
+    ),
+    "shap_summary.png": (
+        "Yorum: SHAP analizi, model tahminlerine en fazla katkida bulunan ozellikleri aciklamaktadir. "
+        "Bu analiz, feature importance sonuclariyla birlikte yorumlandiginda model kararlarinin "
+        "hangi radyomik degiskenlere dayandigini daha anlasilir hale getirmektedir."
+    ),
+    "lime_explanation.png": (
+        "Yorum: LIME analizi, secilen tek bir test ornegi icin model kararini lokal olarak "
+        "aciklamaktadir. Bu grafik, ilgili ornekte hangi ozellik araliklarinin papilodem veya "
+        "normal sinif tahminini destekledigini gostererek model yorumlanabilirligini artirmaktadir."
+    ),
+    "nested_cv_results.png": (
+        "Yorum: Nested cross-validation sonuclari, model secimi ve performans tahmininin daha "
+        "tarafsiz degerlendirilmesini saglamaktadir. Dis fold sonuclarinin birlikte raporlanmasi, "
+        "model performansinin farkli hasta gruplari uzerindeki kararliligini incelemeye yardim eder."
+    ),
+    "feature_stability.png": (
+        "Yorum: Feature stability analizi, farkli cross-validation foldlarinda secilen ozelliklerin "
+        "ne kadar tutarli oldugunu gostermektedir. Yuksek stabiliteye sahip ozellikler, modelin "
+        "yalnizca tek bir bolunmeye bagli olmayan daha guvenilir sinyaller kullandigini destekler."
+    ),
+    "ensemble_optimization.png": (
+        "Yorum: Ensemble optimizasyonu, RF, ET ve GB modellerinin soft voting yapisindaki "
+        "agirliklarini validation performansina gore ayarlamaktadir. Bu yaklasim, ensemble "
+        "modelin tum uyeleri esit kabul etmek yerine daha etkili modellerden daha fazla "
+        "yararlanmasini saglamaktadir."
+    ),
+    "threshold_optimization.png": (
+        "Yorum: Threshold optimization analizi, varsayilan 0.50 karar esigi yerine validation "
+        "setinde daha uygun esiklerin denenmesini saglamaktadir. Bu islem, precision ve recall "
+        "arasindaki dengeyi klinik onceliklere gore ayarlamak icin kullanilabilir."
+    ),
+}
+
 SKIP_LINES = {
     "Bu bolume `outputs/tables/model_performance_test.csv` tablosundaki sonuclari ekle.",
     "Bu bolume outputs/tables/model_performance_test.csv tablosundaki sonuclari ekle.",
@@ -153,6 +218,21 @@ def build_styles():
             spaceBefore=6,
             spaceAfter=6,
             textColor=colors.HexColor("#1F3A5F"),
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="FigureComment",
+            parent=styles["BodyText"],
+            fontName=base_font,
+            fontSize=9.3,
+            leading=12,
+            alignment=TA_JUSTIFY,
+            leftIndent=0.35 * cm,
+            rightIndent=0.35 * cm,
+            spaceBefore=6,
+            spaceAfter=10,
+            textColor=colors.HexColor("#333333"),
         )
     )
     return styles
@@ -393,7 +473,12 @@ def add_image_block(story: list, styles, file_name: str, caption: str) -> None:
     scale = min(max_width / img.imageWidth, max_height / img.imageHeight)
     img.drawWidth = img.imageWidth * scale
     img.drawHeight = img.imageHeight * scale
-    story.append(KeepTogether([paragraph(caption, styles, "Caption"), img, Spacer(1, 10)]))
+    block = [paragraph(caption, styles, "Caption"), img]
+    comment = FIGURE_COMMENTS.get(file_name)
+    if comment:
+        block.append(paragraph(comment, styles, "FigureComment"))
+    block.append(Spacer(1, 10))
+    story.append(KeepTogether(block))
 
 
 def add_figures(story: list, styles) -> None:
