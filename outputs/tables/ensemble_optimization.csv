@@ -1,0 +1,2 @@
+model,rf_weight,et_weight,gb_weight,validation_macro_f1,validation_brier_score,test_threshold,test_accuracy,test_precision,test_recall,test_f1,test_macro_f1,test_balanced_accuracy,test_brier_score,test_roc_auc,test_pr_auc
+WeightedEnsemble,0.1,0.8,0.1,0.8445892370807047,0.08975071554373293,0.5,0.9285714285714286,1.0,0.75,0.8571428571428571,0.9047619047619047,0.875,0.05839006578996618,0.9748724489795918,0.9502015229437096

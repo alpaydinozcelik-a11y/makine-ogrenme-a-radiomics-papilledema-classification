@@ -1,0 +1,9 @@
+test,comparison,statistic,p_value,p_value_bonferroni
+Friedman,all_models,7.849514563106785,0.346050543564276,0.346050543564276
+Wilcoxon signed-rank,Ensemble vs ET,5.5,0.75,1.0
+Wilcoxon signed-rank,Ensemble vs GB,7.0,1.0,1.0
+Wilcoxon signed-rank,Ensemble vs KNN,7.0,1.0,1.0
+Wilcoxon signed-rank,Ensemble vs LR,5.0,0.625,1.0
+Wilcoxon signed-rank,Ensemble vs MLP,5.0,0.625,1.0
+Wilcoxon signed-rank,Ensemble vs RF,7.0,1.0,1.0
+Wilcoxon signed-rank,Ensemble vs SVM,6.0,0.8125,1.0

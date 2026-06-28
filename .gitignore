@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+.cache/
+.matplotlib-cache/
+tmp/
+outputs/models/
+outputs/model_performance_test.csv
+outputs/**/*.pkl
+outputs/**/*.joblib
+teslim_paketi/
+teslim_paketi.zip
+New

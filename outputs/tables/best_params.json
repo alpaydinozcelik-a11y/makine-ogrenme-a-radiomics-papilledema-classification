@@ -1,0 +1,45 @@
+{
+  "LR": {
+    "C": 0.061937179416835984,
+    "mrmr_k": 35
+  },
+  "SVM": {
+    "C": 11.305431042251092,
+    "gamma": 0.000160686832626394,
+    "mrmr_k": 70
+  },
+  "RF": {
+    "n_estimators": 337,
+    "max_depth": 2,
+    "min_samples_leaf": 5,
+    "max_features": null,
+    "mrmr_k": 80
+  },
+  "ET": {
+    "n_estimators": 202,
+    "max_depth": 17,
+    "min_samples_leaf": 4,
+    "max_features": null,
+    "mrmr_k": 20
+  },
+  "GB": {
+    "n_estimators": 395,
+    "learning_rate": 0.10576586011438951,
+    "max_depth": 3,
+    "subsample": 0.6562368721631775,
+    "mrmr_k": 35
+  },
+  "KNN": {
+    "n_neighbors": 15,
+    "weights": "distance",
+    "p": 1,
+    "mrmr_k": 20
+  },
+  "MLP": {
+    "hidden_layer_sizes": "64",
+    "activation": "relu",
+    "alpha": 0.00010763320949657928,
+    "learning_rate_init": 0.00016448675057176686,
+    "mrmr_k": 45
+  }
+}

@@ -1,0 +1,2 @@
+rows,patients,normal_rows,papilledema_rows,normal_patients,papilledema_patients,feature_count,missing_values,duplicate_rows
+966,69,672,294,48,21,746,0,0

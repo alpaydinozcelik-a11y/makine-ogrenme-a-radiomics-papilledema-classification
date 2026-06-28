@@ -1,0 +1,8 @@
+model,best_macro_f1,best_params,n_trials
+LR,0.8798866249579367,"{'C': 0.061937179416835984, 'mrmr_k': 35}",50
+SVM,0.8922722974040133,"{'C': 11.305431042251092, 'gamma': 0.000160686832626394, 'mrmr_k': 70}",50
+RF,0.9170848622631645,"{'n_estimators': 337, 'max_depth': 2, 'min_samples_leaf': 5, 'max_features': None, 'mrmr_k': 80}",50
+ET,0.912317999142175,"{'n_estimators': 202, 'max_depth': 17, 'min_samples_leaf': 4, 'max_features': None, 'mrmr_k': 20}",50
+GB,0.9210721503820318,"{'n_estimators': 395, 'learning_rate': 0.10576586011438951, 'max_depth': 3, 'subsample': 0.6562368721631775, 'mrmr_k': 35}",50
+KNN,0.8911783761490459,"{'n_neighbors': 15, 'weights': 'distance', 'p': 1, 'mrmr_k': 20}",50
+MLP,0.8920943873888953,"{'hidden_layer_sizes': '64', 'activation': 'relu', 'alpha': 0.00010763320949657928, 'learning_rate_init': 0.00016448675057176686, 'mrmr_k': 45}",50

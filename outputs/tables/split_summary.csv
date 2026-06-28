@@ -1,0 +1,4 @@
+split,rows,patients,normal_rows,papilledema_rows,normal_patients,papilledema_patients
+train,574,41,392,182,28,13
+val,196,14,140,56,10,4
+test,196,14,140,56,10,4
